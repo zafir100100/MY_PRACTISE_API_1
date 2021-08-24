@@ -95,10 +95,61 @@ namespace MY_PRACTISE_API_1.Controllers
             return CreatedAtAction("GetEmployee", new { id = employee.EmployeeId }, employee);
         }
 
-        [HttpPost("report1")]
-        public async Task<ActionResult<IEnumerable<Employee>>> GetEmployeesByDateRange([FromBody] DateRangeInput input)
+        public class Report1Output
         {
-            return await _context.Employees.Where(i => i.JoiningDate >= input.DateFrom && i.JoiningDate <= input.DateTo).ToListAsync();
+            public decimal EmployeeId { get; set; }
+            public string EmployeeName { get; set; }
+            public string DesignationName { get; set; }
+            public string DepartmentName { get; set; }
+            public string CompanyName { get; set; }
+            public DateTime JoiningDate { get; set; }
+            public decimal Salary { get; set; }
+        }
+
+        [HttpGet("report1")]
+        public async Task<ActionResult<List<Report1Output>>> GetEmployeesByActiveStatusTrue()
+        {
+            List<Report1Output> query = await (from e in _context.Employees.Where(i=> i.ActiveStatus == 1)
+                                               join des in _context.Designations
+                                                   on e.DesignationId equals des.DesignationId
+                                               join dept in _context.Departments
+                                                   on des.DepartmentId equals dept.DepartmentId
+                                               join c in _context.Companies
+                                                   on dept.CompanyId equals c.CompanyId
+                                               select new Report1Output
+                                               {
+                                                   EmployeeId = e.EmployeeId,
+                                                   EmployeeName = e.EmployeeName,
+                                                   DesignationName = des.DesignationName,
+                                                   DepartmentName = dept.DepartmentName,
+                                                   CompanyName = c.CompanyName,
+                                                   JoiningDate = e.JoiningDate,
+                                                   Salary = e.Salary
+                                               }).ToListAsync();
+            return query;
+        }
+
+        [HttpPost("report2")]
+        public async Task<ActionResult<List<Report1Output>>> GetEmployeesByDateRange([FromBody] DateRangeInput input)
+        {
+            List<Report1Output> query = await (from e in _context.Employees.Where(i => i.JoiningDate >= input.DateFrom && i.JoiningDate <= input.DateTo && i.ActiveStatus == 1)
+                                               join des in _context.Designations
+                                                   on e.DesignationId equals des.DesignationId
+                                               join dept in _context.Departments
+                                                   on des.DepartmentId equals dept.DepartmentId
+                                               join c in _context.Companies
+                                                   on dept.CompanyId equals c.CompanyId
+                                               select new Report1Output
+                                               {
+                                                   EmployeeId = e.EmployeeId,
+                                                   EmployeeName = e.EmployeeName,
+                                                   DesignationName = des.DesignationName,
+                                                   DepartmentName = dept.DepartmentName,
+                                                   CompanyName = c.CompanyName,
+                                                   JoiningDate = e.JoiningDate,
+                                                   Salary = e.Salary
+                                               }).ToListAsync();
+            return query;
         }
 
         // DELETE: api/Employees/5
