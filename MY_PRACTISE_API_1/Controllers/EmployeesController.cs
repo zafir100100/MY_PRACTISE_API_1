@@ -9,6 +9,18 @@ using MY_PRACTISE_API_1.Models;
 
 namespace MY_PRACTISE_API_1.Controllers
 {
+    //public class PaginationInput
+    //{
+    //    public int? Skip { get; set; }
+    //    public int? Take { get; set; }
+    //}
+
+    public class DateRangeInput
+    {
+        public DateTime DateFrom { get; set; }
+        public DateTime DateTo { get; set; }
+    }
+
     [Route("api/[controller]")]
     [ApiController]
     public class EmployeesController : ControllerBase
@@ -81,6 +93,12 @@ namespace MY_PRACTISE_API_1.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetEmployee", new { id = employee.EmployeeId }, employee);
+        }
+
+        [HttpPost("report1")]
+        public async Task<ActionResult<IEnumerable<Employee>>> GetEmployeesByDateRange([FromBody] DateRangeInput input)
+        {
+            return await _context.Employees.Where(i => i.JoiningDate >= input.DateFrom && i.JoiningDate <= input.DateTo).ToListAsync();
         }
 
         // DELETE: api/Employees/5

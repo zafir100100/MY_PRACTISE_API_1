@@ -1,0 +1,13 @@
+1. create user and grant oracle permission
+
+first login as 
+username: SYSTEM 
+password: (the password given at installation)
+
+then create another user (lets say username is projectadmin1)
+then grant permission to the user by the commands in blog
+
+https://chartio.com/resources/tutorials/how-to-create-a-user-and-grant-permissions-in-oracle/
+
+then login to db using 2nd user id and passsword
+then you will be able to create db and insert data too
